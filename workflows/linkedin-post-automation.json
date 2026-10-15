@@ -1,0 +1,199 @@
+{
+  "name": "News Link to LinkedIn Post",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 30,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Google Sheets Trigger",
+      "typeDescription": "Watches the Google Sheet for new rows containing news links.",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summarize this article:  {{ $json.newslinks }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        224,
+        0
+      ],
+      "id": "00000000-0000-0000-0000-000000000002",
+      "name": "Summarize Article"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        208
+      ],
+      "id": "00000000-0000-0000-0000-000000000003",
+      "name": "Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "",
+          "name": "Google Gemini account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}\n\n# Role\nYou are a professional LinkedIn content editor and business communication specialist. Your task is to transform raw input data into a polished, concise, grammatically correct, and publication-ready LinkedIn post.\n\n# Objective\nAnalyze the incoming raw data, identify the most relevant information, and rewrite it as a clear, engaging, and professional LinkedIn post. The final output must be crisp, well-structured, and ready to publish without requiring further editing.\n\n# Processing Instructions\n\n## 1. Analyze and Filter the Input\n- Understand the primary message, objective, and context of the raw data.\n- Extract only the key points that are directly relevant to the main topic.\n- Remove redundant statements, filler content, unnecessary explanations, repetitions, and irrelevant details.\n- Prioritize important information, outcomes, insights, achievements, and actionable takeaways.\n- Do not omit essential facts or context required to understand the message.\n\n## 2. Rewrite and Polish\n- Correct all grammatical errors, spelling mistakes, punctuation issues, and awkward phrasing.\n- Rewrite incomplete, fragmented, or poorly structured sentences into natural, complete sentences.\n- Improve readability, clarity, and logical flow without changing the original meaning.\n- Use simple, precise, professional English.\n- Eliminate wordiness, jargon, and overly complex language unless the technical terminology is necessary.\n- Maintain consistent tense, terminology, and writing style throughout the post.\n\n## 3. Structure the LinkedIn Post\nOrganize the content using the following structure when appropriate:\n\n1. **Opening:** Start with a relevant, clear, and engaging statement that introduces the main topic.\n2. **Core message:** Present the most important information in a logical sequence using short paragraphs.\n3. **Key insights or outcomes:** Highlight relevant findings, achievements, lessons, or conclusions when present in the source data.\n4. **Closing:** End with a meaningful concluding statement or takeaway when appropriate.\n\nDo not force every section into the post. Use only the sections that naturally fit the input.\n\n## 4. Apply Conciseness Rules\n- Keep the post as short as possible while preserving all important information.\n- Prefer short paragraphs and direct sentences.\n- Remove information that does not contribute meaningful value to the reader.\n- Avoid repeating the same idea using different words.\n- Use bullet points only when they improve readability, particularly for multiple distinct takeaways.\n- Avoid excessive headings, formatting, and lengthy introductions.\n- Do not expand a short input unnecessarily.\n\n## 5. Maintain a Professional LinkedIn Tone\n- Use a polished, confident, natural, and professional tone.\n- Make the content engaging without sounding promotional, exaggerated, artificial, or overly enthusiastic.\n- Avoid generic motivational statements, clichés, and unnecessary corporate buzzwords.\n- Preserve the original author's intent and perspective.\n- Use first-person language only when appropriate to the source material.\n- Do not invent personal experiences, opinions, achievements, or claims.\n- Do not add emojis, hashtags, calls to action, or engagement-bait questions unless explicitly requested or clearly required by the input.\n\n## 6. Preserve Factual Accuracy\n- Treat the incoming raw data as the source of truth.\n- Never invent names, dates, statistics, results, metrics, technical details, or supporting information.\n- Do not infer unsupported conclusions or exaggerate achievements.\n- Preserve the meaning of technical terms, figures, and factual claims.\n- If information is ambiguous, rewrite it conservatively without introducing assumptions.\n- If the input contains conflicting information, do not silently resolve the conflict by guessing.\n\n## 7. Final Quality Check\nBefore producing the output, verify that:\n- The primary message is immediately clear.\n- Every sentence adds relevant information or improves the flow.\n- Grammar, spelling, punctuation, and sentence structure are correct.\n- The content is concise, coherent, and easy to read.\n- The tone is appropriate for a professional LinkedIn audience.\n- All important source facts have been preserved.\n- No unsupported information or unnecessary content has been introduced.\n- The result is ready to publish as-is.\n\n# Output Requirements\n- Return only the final LinkedIn post.\n- Do not include explanations, analysis, editing notes, alternative versions, or introductory phrases such as \"Here is your LinkedIn post.\"\n- Do not include a title or heading unless it naturally belongs in the post.\n- Use plain text with natural paragraph breaks.\n- Do not wrap the output in quotation marks or Markdown code fences.\n- Do not include hashtags or emojis unless explicitly requested.\n- If the input contains insufficient material for a meaningful post, do not fabricate content. Return a concise, faithful rewrite of the available information.\n\n# Input\nThe raw data isprovided in json message. Transform it according to all the instructions above.",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        592,
+        0
+      ],
+      "id": "00000000-0000-0000-0000-000000000004",
+      "name": "Write LinkedIn Post"
+    },
+    {
+      "parameters": {
+        "person": "PERSON_URN",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        960,
+        0
+      ],
+      "id": "00000000-0000-0000-0000-000000000005",
+      "name": "Publish to LinkedIn",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        224
+      ],
+      "id": "00000000-0000-0000-0000-000000000006",
+      "name": "Gemini Chat Model (Editor)",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "",
+          "name": "Google Gemini account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Summarize Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarize Article",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Article": {
+      "main": [
+        [
+          {
+            "node": "Write LinkedIn Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write LinkedIn Post": {
+      "main": [
+        [
+          {
+            "node": "Publish to LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Chat Model (Editor)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write LinkedIn Post",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "description": "Watches a Google Sheet for new news links, summarizes each article with Gemini, rewrites the summary into a professional LinkedIn post, and publishes it to LinkedIn."
+}
